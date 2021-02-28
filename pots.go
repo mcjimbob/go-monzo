@@ -15,19 +15,23 @@ type Pot struct {
 	Balance  int64  `json:"balance"`
 }
 
-func (cl *Client) Pots() ([]*Pot, error) {
+func (cl *Client) Pots(accountID string) ([]*Pot, error) {
 	rsp := &struct {
 		Pots []*Pot `json:"pots"`
 	}{}
-	if err := cl.request("GET", "/pots", nil, rsp); err != nil {
+	if err := cl.request("GET", "/pots", map[string]string{
+		"current_account_id": accountID,
+	}, rsp); err != nil {
 		return nil, err
 	}
 	return rsp.Pots, nil
 }
 
-func (cl *Client) Pot(potID string) (*Pot, error) {
+func (cl *Client) Pot(accountID, potID string) (*Pot, error) {
 	pot := &Pot{}
-	if err := cl.request("GET", "/pots/"+potID, nil, pot); err != nil {
+	if err := cl.request("GET", "/pots/"+potID, map[string]string{
+		"current_account_id": accountID,
+	}, pot); err != nil {
 		return nil, err
 	}
 	return pot, nil
